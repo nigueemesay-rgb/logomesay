@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vote for a Logo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+    --bg: #d0d3c1;
+    --card: #70854a;
+    --accent: #1325ce;
+    --muted: #1417e9;
+    --radius: 12px;
+}
+html,body{
+    height:100%;
+    margin:0;
+    font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background: linear-gradient(180deg, #a5a081 0%, var(--bg) 100%);
+    color:#111827;
+}
+/* Navbar styling */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px;
+    background: #1506e7;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: 1px;
+}
+/* logo inside brand */
+.nav-logo{display:inline-flex;align-items:center;gap:10px}
+.nav-logo svg{width:44px;height:44px;flex:0 0 44px}
+.nav-logo img{width:44px;height:44px;object-fit:contain;border-radius:8px}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+}
+
+/* menu button (hamburger) - hidden on desktop, shown on small screens */
+.menu-btn{display:none;align-items:center;justify-content:center;border:0;background:transparent;color:#fff;font-size:22px;padding:6px 8px;border-radius:8px;cursor:pointer}
+.menu-btn:focus{outline:3px solid rgba(255,255,255,0.12);outline-offset:2px}
+
+.nav-links a {
+    text-decoration: none;
+    color: #fff;
+    font-weight: 500;
+    padding: 8px 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background: var(--accent);
+     background: #08ce08;
+    color: #fff;
+    transform: translateY(-2px);
+}
+
+.nav-links .nav-btn {
+    background: #1506e7;
+    color: #fff;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.nav-links .nav-btn:hover {
+    background: #08ce08;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.1);
+}
+
+/* Department submenu styles */
+.nav-links{position:relative}
+.dept-menu{position:absolute;left:0;top:calc(100% + 8px);background:var(--card);padding:10px;border-radius:10px;display:none;flex-direction:column;gap:8px;min-width:180px;box-shadow:0 12px 30px rgba(0,0,0,0.12)}
+.dept-menu.show{display:flex}
+.dept-btn{background:transparent;border:1px solid rgba(255,255,255,0.06);color:#fff;padding:8px 10px;border-radius:8px;text-align:left;cursor:pointer;font-weight:600}
+.dept-btn:hover{background:rgba(206, 19, 19, 0.03);transform:translateY(-2px)}
+@media (max-width:768px){
+    .dept-menu{position:static;box-shadow:none;padding:8px 6px}
+}
+
+@media (max-width:768px){
+    .navbar {
+        flex-direction: column;
+        gap: 12px;
+    }
+    /* show a hamburger menu instead of always-visible nav links */
+    .menu-btn{display:inline-flex}
+    .nav-links{display:none;position:absolute;right:12px;top:64px;background:var(--card);padding:12px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.12);flex-direction:column;gap:8px}
+    .navbar.nav-open .nav-links{display:flex}
+    .nav-links .nav-btn{width:100%;text-align:center}
+}
+
+.wrap{
+    max-width:980px;
+    margin:32px auto;
+    padding:24px;
+    box-sizing:border-box;
+}
+h2{
+    margin:0 0 18px 0;font-weight:600;
+    color:#0927ac;
+}
+p.lead{
+    color:#0927ac;
+    margin-top:6px;
+}
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:18px;
+    margin:20px 0 28px 0;
+}
+.option{
+    background:var(--card);
+    border-radius:var(--radius);
+    padding:12px;
+    text-align:center;
+    box-shadow:0 6px 18px rgba(16,24,40,0.06);
+    transition:transform .18s ease, box-shadow .18s ease;
+    user-select:none;
+}
+.option:hover{transform:translateY(-6px);box-shadow:0 12px 26px rgba(16,24,40,0.08)}
+.option img{
+    width:100%;
+    max-width:240px;
+    height:auto;
+    border-radius:8px;
+    border:4px solid transparent;
+    display:block;margin:0 auto 8px auto;
+    cursor:pointer;
+}
+/* visually hide but keep accessible */
+input[type="radio"]{position:absolute;opacity:0;height:0;width:0}
+/* style label when its radio is checked */
+input[type="radio"]:checked + label .option img{border-color:var(--accent)}
+input[type="radio"]:checked + label .option{outline:4px solid rgba(15,123,108,0.08)}
+
+.caption{font-weight:600;margin-top:6px}
+.count{color:var(--muted);font-size:0.9rem;margin-top:4px}
+
+.controls{display:flex;gap:12px;align-items:center;justify-content:flex-end;margin-top:12px}
+.btn{background:var(--accent);color:rgb(14, 235, 51);padding:10px 16px;border-radius:10px;border:0;cursor:pointer;font-weight:600;transition:transform .12s ease,box-shadow .12s ease,opacity .12s}
+.btn.secondary{background:#09d32b;color:var(--muted)}
+.btn:hover{transform:translateY(-3px);box-shadow:0 10px 20px rgba(19,37,206,0.14);opacity:0.98}
+.btn.secondary:hover{transform:translateY(-3px);box-shadow:0 8px 18px rgba(78,236,58,0.12)}
+.btn:active{transform:translateY(-1px);box-shadow:0 6px 12px rgba(19,37,206,0.1)}
+.btn:focus{outline:3px solid rgba(19,37,206,0.16);outline-offset:2px}
+/* pressed state applied via JS for click/touch to keep hover visuals while pressed */
+.btn.pressed{transform:translateY(-3px);box-shadow:0 10px 20px rgba(19,37,206,0.14);opacity:0.98}
+.btn:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+
+.note{font-size:0.9rem;color:var(--muted);margin-top:12px}
+
+        /* Mobile-specific adjustments for Android / small screens */
+        .btn{touch-action:manipulation}
+        @media (max-width:640px){
+            .wrap{padding:14px 12px 96px 12px}
+            .grid{gap:14px}
+            /* keep controls reachable at bottom for thumbs */
+            .controls{position:fixed;left:8px;right:8px;bottom:12px;background:rgba(9,39,172,0.96);padding:10px;border-radius:14px;box-shadow:0 8px 20px rgba(9,39,172,0.12);justify-content:space-between}
+            .controls .note{display:none}
+            .btn{flex:1;margin:0 6px;padding:12px 14px;font-size:1rem;border-radius:10px}
+            .btn.secondary{margin-left:6px}
+            /* ensure grid content isn't covered by controls */
+            .grid{padding-bottom:110px}
+            .nav-links{overflow-x:auto}
+        }
+
+@media (max-width:480px){
+    .wrap{padding:14px}
+}
+
+/* department description styling */
+.dept-desc{padding:12px;border-radius:8px;background:rgba(255,255,255,0.02);margin-top:12px}
+.dept-desc h4{margin:0 0 8px 0;color:#fff}
+.dept-desc ul{margin:8px 0 0 18px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<header class="navbar">
+    <div class="nav-brand">
+        <div class="nav-logo" aria-hidden="false">
+            <img src="image.png" alt="Rift Valley University Woliso Campus logo" class="nav-img">
+            <span>Rift Valley University Woliso Campus</span>
+        </div>
+    </div>
+    <button id="menuBtn" class="menu-btn" aria-label="Toggle navigation menu" aria-expanded="false">☰</button>
+    <nav class="nav-links" aria-label="Main navigation">
+        <a href="#about">About us</a>
+        <a href="#department" id="deptToggle" role="button" aria-expanded="false">Department</a>
+        <div class="dept-menu" id="deptMenu" aria-hidden="true">
+            <button class="dept-btn" data-dept="Pharmacy">Pharmacy</button>
+            <button class="dept-btn" data-dept="Accounting">Accounting</button>
+            <button class="dept-btn" data-dept="Management">Management</button>
+            <button class="dept-btn" data-dept="Nurse">Nurse</button>
+            <button class="dept-btn" data-dept="Other">Other</button>
+        </div>
+        <a href="#contact" class="nav-btn">Contact</a>
+    </nav>
+</header>
+
+<div class="wrap">
+    <h2>Select Your Favorite Pharmacy Logo</h2>
+    <p class="lead">Click or use keyboard to choose, then press <strong>Vote</strong>.</p>
+
+    <form id="voteForm" aria-labelledby="vote-heading">
+        <div class="grid">
+            <!-- Option 1 -->
+            <div>
+                <input type="radio" id="logo1" name="vote" value="logo1" aria-describedby="count-logo1">
+                <label for="logo1">
+                    <div class="option" role="button" aria-hidden="true">
+                        <img src="logo1.jpg" alt="Logo 1">
+                        <div class="caption">Logo 1</div>
+                        <div class="count"><span id="count-logo1">0</span> votes</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Option 2 -->
+            <div>
+                <input type="radio" id="logo2" name="vote" value="logo2" aria-describedby="count-logo2">
+                <label for="logo2">
+                    <div class="option" role="button" aria-hidden="true">
+                        <img src="logo2.jpg" alt="Logo 2">
+                        <div class="caption">Logo 2</div>
+                        <div class="count"><span id="count-logo2">0</span> votes</div>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Option 3 -->
+            <div>
+                <input type="radio" id="logo3" name="vote" value="logo3" aria-describedby="count-logo3">
+                <label for="logo3">
+                    <div class="option" role="button" aria-hidden="true">
+                        <img src="logo3.jpg" alt="Logo 3">
+                        <div class="caption">Logo 3</div>
+                        <div class="count"><span id="count-logo3">0</span> votes</div>
+                    </div>
+                </label>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button type="button" id="voteBtn" class="btn">Vote</button>
+            <button type="button" id="resetBtn" class="btn secondary">Reset</button>
+            <div class="note" id="status"></div>
+        </div>
+    </form>
+</div>
+
+<script>
+(function(){
+    const options = ['logo1','logo2','logo3'];
+    const countsKey = 'voteCounts_v1';
+    const votedKey = 'voted_v1';
+
+    function loadCounts(){
+        const raw = localStorage.getItem(countsKey);
+        try{ return raw ? JSON.parse(raw) : {} }catch(e){return {};}
+    }
+    function saveCounts(obj){ localStorage.setItem(countsKey, JSON.stringify(obj)); }
+
+    function renderCounts(){
+        const counts = loadCounts();
+        options.forEach(opt => {
+            const el = document.getElementById('count-' + opt);
+            el.textContent = (counts[opt]||0);
+        })
+    }
+
+    function markDisabled(voted){
+        const labels = document.querySelectorAll('label[for]');
+        labels.forEach(l => {
+            l.style.pointerEvents = voted ? 'none' : '';
+            l.style.opacity = voted ? '0.8' : '';
+        })
+        document.getElementById('voteBtn').disabled = voted;
+    }
+
+    document.addEventListener('DOMContentLoaded', ()=>{
+        renderCounts();
+        const voteBtn = document.getElementById('voteBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const status = document.getElementById('status');
+
+        function attachPressHandlers(btn){
+            if(!btn) return;
+            let removeTimeout = null;
+            const add = ()=>{ btn.classList.add('pressed'); if(removeTimeout) { clearTimeout(removeTimeout); removeTimeout = null } };
+            const remove = ()=>{ btn.classList.remove('pressed'); if(removeTimeout) { clearTimeout(removeTimeout); removeTimeout = null } };
+            btn.addEventListener('mousedown', add);
+            btn.addEventListener('mouseup', remove);
+            btn.addEventListener('mouseleave', remove);
+            btn.addEventListener('touchstart', add, {passive:true});
+            btn.addEventListener('touchend', remove);
+            btn.addEventListener('keydown', (e)=>{ if(e.key===' '||e.key==='Enter'){ add(); } });
+            btn.addEventListener('keyup', (e)=>{ if(e.key===' '||e.key==='Enter'){ removeTimeout=setTimeout(remove,180); } });
+            btn.addEventListener('click', ()=>{ add(); removeTimeout=setTimeout(remove,220); });
+        }
+
+        attachPressHandlers(voteBtn);
+        attachPressHandlers(resetBtn);
+
+        if(localStorage.getItem(votedKey) === 'true'){
+            status.textContent = 'You have already voted — thank you!';
+            markDisabled(true);
+        }
+
+        voteBtn.addEventListener('click', ()=>{
+            if(localStorage.getItem(votedKey) === 'true'){
+                status.textContent = 'You already voted.'; return;
+            }
+            const selected = document.querySelector('input[name="vote"]:checked');
+            if(!selected){ status.textContent = 'Please choose a logo before voting.'; return; }
+            const counts = loadCounts();
+            counts[selected.value] = (counts[selected.value]||0) + 1;
+            saveCounts(counts);
+            localStorage.setItem(votedKey,'true');
+            status.textContent = 'Thanks — Your Vote is Recorded!';
+            renderCounts();
+            markDisabled(true);
+        });
+
+        resetBtn.addEventListener('click', ()=>{
+            if(!confirm('Reset all votes and allow voting again?')) return;
+            localStorage.removeItem(countsKey);
+            localStorage.removeItem(votedKey);
+            renderCounts();
+            document.querySelectorAll('input[name="vote"]').forEach(i=>i.checked=false);
+            status.textContent = 'Votes reset.';
+            markDisabled(false);
+        })
+
+        // Department submenu behavior
+        const deptToggle = document.getElementById('deptToggle');
+        const deptMenu = document.getElementById('deptMenu');
+        const deptDescription = document.getElementById('deptDescription');
+
+        const deptTexts = {
+            'Pharmacy': null, // Pharmacy will show a richer HTML block handled separately
+            'Accounting': 'Accounting: Handles billing, budgeting, and financial reporting for the organization.',
+            'Management': 'Management: Oversees operations, strategy, and coordination between departments.',
+            'Nurse': 'Nurse: Provides patient care, coordinates medication administration and follows clinical protocols.',
+            'Other': 'Other: Additional support and administrative departments that keep the organization running.'
+        };
+
+        function closeDeptMenu(){
+            deptMenu.classList.remove('show');
+            deptToggle.setAttribute('aria-expanded','false');
+            deptMenu.setAttribute('aria-hidden','true');
+        }
+        function openDeptMenu(){
+            deptMenu.classList.add('show');
+            deptToggle.setAttribute('aria-expanded','true');
+            deptMenu.setAttribute('aria-hidden','false');
+        }
+
+        deptToggle && deptToggle.addEventListener('click',(e)=>{
+            e.preventDefault();
+            if(deptMenu.classList.contains('show')) closeDeptMenu(); else openDeptMenu();
+        });
+
+        // handle clicks on department buttons
+        deptMenu && deptMenu.addEventListener('click', (e)=>{
+            const btn = e.target.closest('.dept-btn');
+            if(!btn) return;
+            const name = btn.dataset.dept;
+            // If Pharmacy, inject a richer HTML block (courses, students, teachers, GC student, other)
+            if(name === 'Pharmacy'){
+                const html = `
+                    <div class="dept-desc" role="region" aria-live="polite">
+                        <h4>Pharmacy Department</h4>
+                        <p style="margin:0 0 8px 0;color:var(--muted)">Overview: The Pharmacy department handles medication dispensing, clinical services, and patient counseling.</p>
+                        <strong style="color:#fff">Courses</strong>
+                        <ul>
+                            <li>Pharmaceutical Chemistry</li>
+                            <li>Pharmacology</li>
+                            <li>Clinical Pharmacy</li>
+                            <li>Pharmacy Practice & Ethics</li>
+                        </ul>
+                        <strong style="color:#fff;margin-top:8px;display:block">Students</strong>
+                        <ul>
+                            <li>Undergraduate students: ~300 </li>
+                            <li>Graduate students: ~30 (GC students included)</li>
+                        </ul>
+                        <strong style="color:#fff;margin-top:8px;display:block">Teachers</strong>
+                        <ul>
+                            <li>Professors: Dr. A. Smith, Dr. B. Lee (example)</li>
+                            <li>Clinical instructors and lab staff</li>
+                        </ul>
+                        <strong style="color:#fff;margin-top:8px;display:block">GC student</strong>
+                        <p style="margin:6px 0 0 0;color:var(--muted)">GC students (Graduate/Continuing) engage in research projects and clinical rotations supported by faculty mentors.</p>
+                        <strong style="color:#fff;margin-top:8px;display:block">Other</strong>
+                        <p style="margin:6px 0 0 0;color:var(--muted)">Additional services include community outreach, vaccination clinics, and medication therapy management.</p>
+                    </div>
+                `;
+                if(deptDescription) deptDescription.innerHTML = html;
+            } else {
+                const text = deptTexts[name] || 'No information available.';
+                if(deptDescription) deptDescription.textContent = text;
+            }
+            // close menu and scroll to department section
+            closeDeptMenu();
+            document.getElementById('department').scrollIntoView({behavior:'smooth',block:'start'});
+        });
+
+        // close menu on outside click
+        document.addEventListener('click', (e)=>{
+            if(!deptMenu) return;
+            if(!deptMenu.contains(e.target) && e.target !== deptToggle){
+                closeDeptMenu();
+            }
+        });
+
+        // Responsive hamburger menu behavior
+        const menuBtn = document.getElementById('menuBtn');
+        const navbar = document.querySelector('.navbar');
+        const navLinks = document.querySelector('.nav-links');
+
+        function closeNav(){
+            navbar.classList.remove('nav-open');
+            if(menuBtn) menuBtn.setAttribute('aria-expanded','false');
+        }
+        function openNav(){
+            navbar.classList.add('nav-open');
+            if(menuBtn) menuBtn.setAttribute('aria-expanded','true');
+        }
+
+        if(menuBtn){
+            menuBtn.addEventListener('click', (e)=>{
+                e.stopPropagation();
+                if(navbar.classList.contains('nav-open')) closeNav(); else openNav();
+            });
+        }
+
+        // close nav if clicking outside or pressing Escape
+        document.addEventListener('click', (e)=>{
+            if(!navLinks) return;
+            if(navbar.classList.contains('nav-open') && !navbar.contains(e.target) && e.target !== menuBtn){
+                closeNav();
+            }
+        });
+        document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeNav(); });
+    })
+})();
+</script>
+
+<!-- Sections -->
+<section id="about" style="padding:28px;max-width:980px;margin:18px auto;background:rgba(255,255,255,0.02);border-radius:10px;">
+    <h3 style="margin:0 0 8px 0;color:#0927ac">About us</h3>
+    <p style="margin:0;color:var(--muted)">We are collecting student feedback to choose a pharmacy logo, Ti-shert Design and other.<br> This demo stores votes locally in your browser.</p>
+</section>
+<section id="department" style="padding:28px;max-width:980px;margin:18px auto;background:rgba(255,255,255,0.02);border-radius:10px;">
+    <h3 style="margin:0 0 8px 0;color:#0927ac">Department</h3>
+    <div id="deptDescription" style="margin:0;color:var(--muted)">Pharmacy Department is a critical clinical and <br>
+  administrative unit within a healthcare system responsible for<br>
+ the safe, effective, and rational use of medications. <br>
+
+ It functions as the central hub for<br>
+procurement, storage, compounding, dispensing, and distribution of pharmaceuticals,<br> 
+while ensuring compliance with national regulatory standards and institutional policies. <br>
+The department plays a key role in <br>
+promoting patient safety, optimizing therapeutic outcomes, and <br>
+supporting broader public health objectives..<br>1. Core Functions<br style="color: #1325ce;">@Medication Procurement and Supply Chain Management<br>@Dispensing and Patient Counseling
+ <br>@Clinical Pharmacy Services <br>@Compounding and Formulation <br>@ Inventory Control and Storage Management <br>@ Regulatory Compliance and Documentation 
+ <br>@Pharmacovigilance and Drug Information Services</div>
+</section>
+<section id="contact" style="padding:28px;max-width:980px;margin:18px auto 60px auto;background:rgba(255,255,255,0.02);border-radius:10px;">
+    <h3 style="margin:0 0 8px 0;color:#0927ac">Contact</h3>
+    <p style="margin:0;color:rgb(218, 9, 9)">Email: <a href="mailto:info@example.com">nigueemesay@example.com</a></p>
+    <p style="margin:0;color:red">Telegram: <a href="mailto:info@example.com">https://t.me/pharm2o24</a></p>
+     <p style="margin:0;color:rgb(226, 11, 11)">Phone Number: <a href="mailto:info@example.com">+251946344188</a></p>
+</section>
+
+</body>
+</html>
